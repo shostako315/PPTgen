@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DeckForge — MBB Grade Deck Generator</title>
-<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundled.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgen.bundled.js" onerror="loadPptxFallback()"></script>
+<script>function loadPptxFallback(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundled.js';document.head.appendChild(s);}</script>
+<script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -126,6 +127,7 @@ textarea:focus,input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(
         <div class="hdr-dot"></div>
         <span class="hdr-badge-txt">Gemini 2.5 Flash</span>
       </div>
+      <span id="libStatus" style="display:none;font-size:10px;padding:3px 10px;border-radius:10px;"></span>
     </div>
   </div>
   <div class="cors-warn" id="corsWarn">
@@ -209,6 +211,14 @@ textarea:focus,input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(
 <script>
 let gData=null,fileContent=null,fileBase64=null,fileMime=null;
 if(location.protocol==='file:') document.getElementById('corsWarn').style.display='flex';
+
+// ライブラリ読み込み確認
+window.addEventListener('load', function(){
+  if(typeof PptxGenJS==='undefined'){
+    const badge = document.getElementById('libStatus');
+    if(badge){ badge.textContent='⚠ PPTXライブラリ未読込'; badge.style.background='#FEE2E2'; badge.style.color='#B91C1C'; badge.style.display='block'; }
+  }
+});
 function onApiKeyInput(v){const s=document.getElementById('apiStatus');if(v.length>10){s.textContent='設定済';s.className='api-st ok';}else{s.textContent='未設定';s.className='api-st ng';}}
 function toggleApiVis(){const i=document.getElementById('apiKey');i.type=i.type==='password'?'text':'password';}
 function getApiKey(){return document.getElementById('apiKey').value.trim();}
@@ -334,6 +344,10 @@ function rRec(pres,s,sl,num,total,client){addTitleBar(pres,s,sl.actionTitle||'')
 function rNextSteps(pres,s,sl,num,total,client){addTitleBar(pres,s,sl.actionTitle||'ネクストアクション');const acts=sl.bullets||[];const sy=C.TH+C.ATH+0.15,n=Math.min(acts.length,6);if(!n){addFooter(pres,s,num,total,client);return;}const ih=(C.H-sy-0.22)/n,dr=0.21;acts.slice(0,6).forEach((a,i)=>{const iy=sy+i*ih,cy=iy+(ih-dr*2)/2;s.addShape(pres.shapes.OVAL,{x:C.MX,y:cy,w:dr*2,h:dr*2,fill:{color:C.navy},line:{color:C.navy}});s.addText(String(i+1),{x:C.MX,y:cy,w:dr*2,h:dr*2,fontSize:10,bold:true,color:C.white,fontFace:'Calibri',align:'center',valign:'middle',margin:0});if(i<n-1)s.addShape(pres.shapes.LINE,{x:C.MX+dr,y:cy+dr*2,w:0,h:ih-dr*2,line:{color:C.borderL,width:1}});s.addText(a,{x:C.MX+dr*2+0.14,y:iy,w:C.W-C.MX-dr*2-0.24,h:ih,fontSize:11.5,color:C.dark,fontFace:'Calibri',valign:'middle',wrap:true,margin:0});if(i<n-1)s.addShape(pres.shapes.LINE,{x:C.MX+dr*2+0.14,y:iy+ih,w:C.W-C.MX-dr*2-0.24,h:0,line:{color:C.borderL,width:0.3}});});addFooter(pres,s,num,total,client);}
 
 function downloadPptx(){
+  if(typeof PptxGenJS==='undefined'){
+    alert('ライブラリの読み込みに失敗しました。\nページを再読み込みしてください。\n\nまたはブラウザの「トラッキング防止」設定でunpkg.comとcdn.jsdelivr.netを許可してください。');
+    return;
+  }
   if(!gData)return;
   const pres=new PptxGenJS();pres.layout='LAYOUT_16x9';pres.author=gData.presenter||'Consultant';pres.title=gData.presentationTitle||'Presentation';
   const slides=gData.slides||[],total=slides.length,client=gData.client||'';
