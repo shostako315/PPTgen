@@ -4,178 +4,155 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DeckForge — MBB Grade Deck Generator</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PptxGenJS/3.12.0/pptxgen.bundled.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundled.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --bg:#080E1C;--surface:#0F1927;--surface2:#172133;
-  --border:#1F2E42;--border2:#263649;
-  --navy:#003087;--navyD:#001A4D;--navyL:#1A4FCC;
-  --gold:#C9A84C;--goldL:#E8CC7A;
-  --red:#CC1100;--text:#E2E8F0;--text2:#CBD5E1;
-  --muted:#64748B;--accent:#4F8EF7;
-  --success:#10B981;--radius:10px;
-  --gemini:#1A73E8;--geminiD:#0D47A1;
+  --navy:#003087;--navy2:#00206B;--navy3:#1A4FCC;
+  --gold:#B8901E;--gold2:#F0C040;
+  --red:#C0392B;
+  --bg:#F4F6F9;--surface:#FFFFFF;--surface2:#F8FAFC;
+  --border:#DDE3EE;--border2:#C8D0E0;
+  --text:#1A1D2E;--text2:#3D4460;--muted:#7A839A;
+  --accent:#1A4FCC;--accent-bg:#EEF3FF;
+  --success:#0F7B55;--success-bg:#E8F7F2;
+  --warn:#92600A;--warn-bg:#FEF3D7;
+  --err:#B91C1C;--err-bg:#FEE2E2;
+  --radius:8px;
 }
-html,body{height:100%;font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
+html,body{height:100%;font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);font-size:13px;}
 .app{display:flex;flex-direction:column;height:100vh;}
-
-.hdr{display:flex;align-items:center;gap:14px;padding:0 28px;height:52px;
-  background:linear-gradient(135deg,#001035,#003087);
-  border-bottom:1px solid rgba(201,168,76,.25);flex-shrink:0;}
-.hdr-logo{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--gold);letter-spacing:.06em;}
-.hdr-sub{font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.2em;text-transform:uppercase;margin-left:6px;}
-.hdr-model{margin-left:auto;display:flex;align-items:center;gap:6px;padding:4px 12px;
-  background:rgba(26,115,232,.15);border:1px solid rgba(26,115,232,.35);border-radius:20px;}
-.hdr-model-dot{width:6px;height:6px;border-radius:50%;background:#4FC3F7;animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
-.hdr-model-txt{font-size:9px;color:#4FC3F7;letter-spacing:.12em;text-transform:uppercase;}
-
-.main{display:grid;grid-template-columns:400px 1fr;flex:1;overflow:hidden;}
-
-/* LEFT */
-.lp{display:flex;flex-direction:column;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:22px 20px;gap:16px;}
-.sec{display:flex;flex-direction:column;gap:7px;}
-.lbl{font-size:9.5px;font-weight:600;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;}
-textarea,select{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:12.5px;padding:9px 13px;outline:none;transition:border-color .2s;width:100%;}
-textarea{min-height:120px;line-height:1.65;resize:vertical;}
-textarea:focus{border-color:var(--accent);}
+.hdr{display:flex;align-items:center;padding:0 24px;height:50px;background:var(--navy);border-bottom:3px solid var(--gold2);flex-shrink:0;gap:12px;}
+.hdr-logo{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:#FFF;letter-spacing:.05em;}
+.hdr-sep{width:1px;height:18px;background:rgba(255,255,255,.2);}
+.hdr-sub{font-size:10px;color:rgba(255,255,255,.5);letter-spacing:.18em;text-transform:uppercase;}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.hdr-badge{display:flex;align-items:center;gap:5px;padding:4px 11px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;}
+.hdr-dot{width:6px;height:6px;border-radius:50%;background:#6EE7B7;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.hdr-badge-txt{font-size:10px;color:rgba(255,255,255,.85);letter-spacing:.08em;}
+.cors-warn{display:none;align-items:center;gap:10px;padding:8px 24px;background:var(--warn-bg);border-bottom:1px solid #F6C950;font-size:12px;color:var(--warn);flex-shrink:0;}
+.cors-warn code{background:rgba(0,0,0,.07);padding:2px 8px;border-radius:4px;font-family:monospace;}
+.main{display:grid;grid-template-columns:380px 1fr;flex:1;overflow:hidden;}
+.lp{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;padding:20px 18px;gap:18px;}
+.sec{display:flex;flex-direction:column;gap:6px;}
+.lbl{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;}
+textarea,input[type=text],input[type=password]{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:12.5px;padding:8px 12px;outline:none;transition:border-color .15s,box-shadow .15s;width:100%;}
+textarea{min-height:110px;line-height:1.7;resize:vertical;}
+textarea:focus,input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,79,204,.1);}
 .meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
-.meta-grid input,input[type=text],input[type=password]{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:12.5px;padding:9px 13px;outline:none;transition:border-color .2s;width:100%;}
-input:focus{border-color:var(--accent);}
-
-/* API KEY SECTION */
-.api-sec{background:rgba(26,115,232,.06);border:1px solid rgba(26,115,232,.2);border-radius:9px;padding:13px;}
-.api-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;}
-.api-title{font-size:10px;font-weight:600;color:#4FC3F7;letter-spacing:.12em;text-transform:uppercase;}
-.api-status{font-size:9px;padding:2px 8px;border-radius:10px;}
-.api-status.ok{background:rgba(16,185,129,.15);color:#34D399;border:1px solid rgba(16,185,129,.2);}
-.api-status.ng{background:rgba(239,68,68,.12);color:#FCA5A5;border:1px solid rgba(239,68,68,.2);}
+.api-box{background:var(--accent-bg);border:1px solid #C5D5F8;border-radius:var(--radius);padding:13px 14px;}
+.api-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.api-title{font-size:10px;font-weight:700;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;}
+.api-st{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500;}
+.api-st.ok{background:var(--success-bg);color:var(--success);}
+.api-st.ng{background:#FEE2E2;color:var(--err);}
 .api-row{position:relative;}
-.api-row input{padding-right:36px;font-family:monospace;font-size:12px;letter-spacing:.03em;}
-.api-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px;}
-.api-toggle:hover{color:var(--text);}
-.api-hint{font-size:10px;color:var(--muted);margin-top:5px;line-height:1.5;}
-.api-hint a{color:var(--accent);text-decoration:none;}
-.api-hint a:hover{text-decoration:underline;}
-
-/* FILE ZONE */
-.fz{border:1.5px dashed var(--border2);border-radius:9px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2);position:relative;}
-.fz:hover,.fz.over{border-color:var(--accent);background:rgba(79,142,247,.05);}
+.api-row input{padding-right:36px;font-family:monospace;font-size:12px;background:#fff;}
+.eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px 3px;line-height:1;}
+.eye:hover{color:var(--text);}
+.api-link{font-size:11px;color:var(--muted);margin-top:5px;}
+.api-link a{color:var(--accent);text-decoration:none;}
+.api-link a:hover{text-decoration:underline;}
+.fz{border:1.5px dashed var(--border2);border-radius:var(--radius);padding:16px 12px;text-align:center;cursor:pointer;background:var(--surface2);position:relative;transition:all .15s;}
+.fz:hover,.fz.over{border-color:var(--accent);background:var(--accent-bg);}
 .fz input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-.fz-ico{font-size:20px;margin-bottom:4px;opacity:.5;}
-.fz-txt{font-size:11px;color:var(--muted);line-height:1.5;}
+.fz-ico{font-size:20px;margin-bottom:4px;opacity:.4;}
+.fz-txt{font-size:11.5px;color:var(--muted);line-height:1.6;}
 .fz-name{font-size:11px;color:var(--accent);margin-top:5px;font-weight:500;}
-
-/* CHIPS */
 .chips{display:flex;gap:6px;flex-wrap:wrap;}
-.chip{padding:5px 11px;border-radius:20px;font-size:11.5px;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);cursor:pointer;transition:all .2s;user-select:none;}
-.chip.on{background:var(--navy);border-color:var(--navyL);color:#fff;}
-.chip:hover:not(.on){border-color:var(--accent);color:var(--accent);}
-
-.btn-gen{padding:13px 18px;background:linear-gradient(135deg,#003087,#1A4FCC);border:none;border-radius:9px;color:#fff;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;letter-spacing:.04em;transition:all .3s;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:8px;}
-.btn-gen:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,48,135,.4);}
-.btn-gen:disabled{opacity:.55;cursor:not-allowed;}
-.gb{position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--gold);}
-
-/* RIGHT */
-.rp{display:flex;flex-direction:column;overflow:hidden;}
-.rh{display:flex;align-items:center;justify-content:space-between;padding:14px 26px;border-bottom:1px solid var(--border);flex-shrink:0;}
-.rh-title{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
-.btn-dl{padding:7px 18px;background:transparent;border:1px solid var(--gold);border-radius:7px;color:var(--gold);font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:500;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
-.btn-dl:hover:not(:disabled){background:rgba(201,168,76,.1);}
-.btn-dl:disabled{opacity:.3;cursor:not-allowed;}
-
-.pv{flex:1;overflow-y:auto;padding:24px;}
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:14px;color:var(--muted);}
-.empty-ico{font-size:44px;opacity:.25;}
-.empty-t{font-family:'Cormorant Garamond',serif;font-size:21px;color:var(--text2);opacity:.4;}
-.empty-s{font-size:12.5px;color:var(--muted);text-align:center;line-height:1.6;}
-
-.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:18px;}
-.spin{width:38px;height:38px;border:2px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;}
+.chip{padding:5px 12px;border-radius:20px;font-size:12px;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);cursor:pointer;transition:all .15s;user-select:none;}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:500;}
+.chip:hover:not(.on){border-color:var(--accent);color:var(--accent);background:var(--accent-bg);}
+.btn-gen{padding:12px 18px;background:var(--navy);border:none;border-radius:var(--radius);color:#fff;font-family:'Noto Sans JP',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;letter-spacing:.03em;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-gen:hover:not(:disabled){background:var(--navy2);box-shadow:0 4px 16px rgba(0,48,135,.25);}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed;}
+.rp{display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
+.rh{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:var(--surface);border-bottom:1px solid var(--border);}
+.rh-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;}
+.btn-dl{padding:7px 16px;background:transparent;border:1.5px solid var(--navy);border-radius:var(--radius);color:var(--navy);font-family:'Noto Sans JP',sans-serif;font-size:12.5px;font-weight:500;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;}
+.btn-dl:hover:not(:disabled){background:var(--navy);color:#fff;}
+.btn-dl:disabled{opacity:.3;cursor:not-allowed;border-color:var(--muted);color:var(--muted);}
+.pv{flex:1;overflow-y:auto;padding:24px 28px;}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;}
+.empty-ico{font-size:40px;opacity:.2;}
+.empty-t{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--muted);}
+.empty-s{font-size:12.5px;color:var(--muted);text-align:center;line-height:1.7;}
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;}
+.spin{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.load-t{font-size:13px;color:var(--muted);}
-.load-s{font-size:11.5px;color:var(--accent);opacity:.8;}
-.dots{display:flex;gap:5px;align-items:center;margin-top:2px;}
-.dot{width:5px;height:5px;border-radius:50%;background:var(--border);animation:pd 1.4s ease-in-out infinite;}
+.load-t{font-size:13px;color:var(--text2);font-weight:500;}
+.load-s{font-size:11.5px;color:var(--muted);}
+.dots{display:flex;gap:5px;}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--border2);animation:dp 1.3s ease infinite;}
 .dot:nth-child(2){animation-delay:.2s;}.dot:nth-child(3){animation-delay:.4s;}
-@keyframes pd{0%,80%,100%{opacity:.3;transform:scale(.8);}40%{opacity:1;transform:scale(1);background:var(--gold);}}
-
-.sg{display:flex;flex-direction:column;gap:10px;}
-.sumbar{display:flex;gap:22px;padding:11px 18px;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.12);border-radius:8px;margin-bottom:14px;}
-.sv{font-size:17px;font-weight:600;color:var(--gold);font-family:'Cormorant Garamond',serif;}
-.sl{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
-.sc{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:14px 18px;display:flex;gap:14px;align-items:flex-start;transition:border-color .2s;}
-.sc:hover{border-color:rgba(79,142,247,.3);}
-.sn{font-size:10px;color:var(--muted);min-width:22px;padding-top:1px;font-weight:600;}
-.sbadge{padding:2px 7px;border-radius:4px;font-size:8.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;min-width:76px;text-align:center;}
-.b-cover{background:rgba(0,48,135,.35);color:#6BA3FF;border:1px solid rgba(0,48,135,.4);}
-.b-exec_summary{background:rgba(201,168,76,.18);color:var(--gold);border:1px solid rgba(201,168,76,.25);}
-.b-toc{background:rgba(100,116,139,.18);color:#94A3B8;border:1px solid rgba(100,116,139,.25);}
-.b-section{background:rgba(30,41,59,.7);color:#94A3B8;border:1px solid var(--border);}
-.b-bullets{background:rgba(16,185,129,.12);color:#34D399;border:1px solid rgba(16,185,129,.2);}
-.b-two_col{background:rgba(139,92,246,.12);color:#A78BFA;border:1px solid rgba(139,92,246,.2);}
-.b-data{background:rgba(245,158,11,.12);color:#FCD34D;border:1px solid rgba(245,158,11,.2);}
-.b-recommendation{background:rgba(204,17,0,.12);color:#FCA5A5;border:1px solid rgba(204,17,0,.2);}
-.b-next_steps{background:rgba(6,182,212,.12);color:#67E8F9;border:1px solid rgba(6,182,212,.2);}
+@keyframes dp{0%,80%,100%{opacity:.3;transform:scale(.8);}40%{opacity:1;transform:scale(1);background:var(--navy);}}
+.sumbar{display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:18px;background:var(--surface);}
+.sv-item{flex:1;padding:12px 16px;border-right:1px solid var(--border);}
+.sv-item:last-child{border-right:none;}
+.sv-num{font-size:22px;font-weight:700;color:var(--navy);font-family:'Cormorant Garamond',serif;line-height:1;}
+.sv-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:2px;}
+.sg{display:flex;flex-direction:column;gap:8px;}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 16px;display:flex;gap:12px;align-items:flex-start;transition:border-color .15s,box-shadow .15s;}
+.sc:hover{border-color:var(--accent);box-shadow:0 2px 10px rgba(26,79,204,.08);}
+.sn{font-size:10px;color:var(--muted);min-width:20px;padding-top:2px;font-weight:700;font-family:monospace;}
+.sbadge{padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;min-width:80px;text-align:center;}
+.b-cover{background:#E8EDF8;color:var(--navy);}
+.b-exec_summary{background:#FEF9E7;color:#7D5700;}
+.b-toc{background:#F0F0F0;color:#555;}
+.b-section{background:#1A1D2E;color:#9CA3AF;}
+.b-bullets{background:#E8F7F2;color:var(--success);}
+.b-two_col{background:#F3EEFF;color:#6B21A8;}
+.b-data{background:#FEF3C7;color:#92600A;}
+.b-recommendation{background:#FEE2E2;color:var(--err);}
+.b-next_steps{background:#E0F2FE;color:#0369A1;}
 .sct{flex:1;min-width:0;}
-.sat{font-size:12.5px;font-weight:500;color:var(--text);line-height:1.5;margin-bottom:5px;}
-.sbp{font-size:11px;color:var(--muted);line-height:1.6;}
-.sbp::before{content:'— ';color:var(--red);}
-.err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:14px 16px;font-size:12.5px;color:#FCA5A5;line-height:1.5;}
-::-webkit-scrollbar{width:5px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+.sat{font-size:12.5px;font-weight:500;color:var(--text);line-height:1.5;margin-bottom:4px;}
+.sbp{font-size:11px;color:var(--muted);line-height:1.6;padding-left:10px;border-left:2px solid var(--border2);margin-top:3px;}
+.err-box{background:var(--err-bg);border:1px solid #FECACA;border-radius:var(--radius);padding:14px 16px;font-size:12.5px;color:var(--err);line-height:1.6;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="hdr">
-    <div>
-      <span class="hdr-logo">◼ DeckForge</span>
-      <span class="hdr-sub">MBB Grade</span>
-    </div>
-    <div class="hdr-model">
-      <div class="hdr-model-dot"></div>
-      <div class="hdr-model-txt">Gemini 2.5 Flash</div>
+    <span class="hdr-logo">◼ DeckForge</span>
+    <div class="hdr-sep"></div>
+    <span class="hdr-sub">MBB Grade</span>
+    <div class="hdr-right">
+      <div class="hdr-badge">
+        <div class="hdr-dot"></div>
+        <span class="hdr-badge-txt">Gemini 2.5 Flash</span>
+      </div>
     </div>
   </div>
-
-  <!-- FILE:// WARNING -->
-  <div id="corsWarn" style="display:none;background:#7C2D12;border-bottom:1px solid #EA580C;padding:9px 28px;font-size:12px;color:#FED7AA;display:flex;align-items:center;gap:10px;flex-shrink:0;">
-    <span style="font-size:15px;">⚠️</span>
+  <div class="cors-warn" id="corsWarn">
+    <span>⚠️</span>
     <span><strong>file:// では動作しません。</strong>ローカルサーバーで起動してください：</span>
-    <code style="background:rgba(0,0,0,.3);padding:2px 10px;border-radius:5px;font-family:monospace;color:#FDBA74;">python -m http.server 8080</code>
+    <code>python -m http.server 8080</code>
     <span>→ <strong>http://localhost:8080/mbb-deck-generator.html</strong> を開く</span>
   </div>
-
   <div class="main">
-    <!-- LEFT PANEL -->
     <div class="lp">
-
-      <!-- API KEY -->
-      <div class="api-sec">
-        <div class="api-header">
-          <div class="api-title">Gemini API Key</div>
-          <div class="api-status ng" id="apiStatus">未設定</div>
+      <div class="api-box">
+        <div class="api-hd">
+          <span class="api-title">Gemini API Key</span>
+          <span class="api-st ng" id="apiStatus">未設定</span>
         </div>
         <div class="api-row">
           <input type="password" id="apiKey" placeholder="AIza..." oninput="onApiKeyInput(this.value)">
-          <button class="api-toggle" onclick="toggleApiVis()" id="apiToggle">👁</button>
+          <button class="eye" onclick="toggleApiVis()">👁</button>
         </div>
-        <div class="api-hint">
+        <div class="api-link">
           <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a> でAPIキーを取得
         </div>
       </div>
-
       <div class="sec">
         <div class="lbl">プレゼンテーション概要</div>
         <textarea id="brief" placeholder="自由に入力してください&#10;&#10;例：&#10;クライアント：大手製造業&#10;テーマ：東南アジア市場参入戦略&#10;背景：国内市場縮小で新市場開拓が急務&#10;論点：どの市場に・何を・いつ参入すべきか"></textarea>
       </div>
-
       <div class="sec">
         <div class="lbl">メタ情報</div>
         <div class="meta-grid">
@@ -185,7 +162,6 @@ input:focus{border-color:var(--accent);}
           <input id="lang" type="text" placeholder="言語" value="日本語">
         </div>
       </div>
-
       <div class="sec">
         <div class="lbl">参考資料（任意）</div>
         <div class="fz" id="fz">
@@ -195,7 +171,6 @@ input:focus{border-color:var(--accent);}
           <div class="fz-name" id="fn"></div>
         </div>
       </div>
-
       <div class="sec">
         <div class="lbl">目標スライド数</div>
         <div class="chips" id="sc">
@@ -205,7 +180,6 @@ input:focus{border-color:var(--accent);}
           <div class="chip" data-v="25" onclick="setChip('sc',this)">〜25枚</div>
         </div>
       </div>
-
       <div class="sec">
         <div class="lbl">出力言語</div>
         <div class="chips" id="lc">
@@ -213,23 +187,17 @@ input:focus{border-color:var(--accent);}
           <div class="chip" data-v="en" onclick="setChip('lc',this)">English</div>
         </div>
       </div>
-
       <button class="btn-gen" id="gbtn" onclick="generate()">
-        <span id="gbtxt">🎯 MBBデッキを生成</span>
-        <div class="gb"></div>
+        <span id="gbtxt">🎯　MBBデッキを生成</span>
       </button>
     </div>
-
-    <!-- RIGHT PANEL -->
     <div class="rp">
       <div class="rh">
         <div class="rh-title">スライド プレビュー</div>
-        <button class="btn-dl" id="dlbtn" onclick="downloadPptx()" disabled>
-          ⬇ PowerPoint をダウンロード
-        </button>
+        <button class="btn-dl" id="dlbtn" onclick="downloadPptx()" disabled>⬇ PowerPointをダウンロード</button>
       </div>
       <div class="pv" id="pv">
-        <div class="empty" id="es">
+        <div class="empty">
           <div class="empty-ico">📊</div>
           <div class="empty-t">Ready to Generate</div>
           <div class="empty-s">APIキーを設定して概要を入力<br>Pyramid Principle × Action Title で構成します</div>
@@ -238,165 +206,58 @@ input:focus{border-color:var(--accent);}
     </div>
   </div>
 </div>
-
 <script>
-// ── STATE ──
-let gData = null;
-let fileContent = null;
-let fileBase64 = null;
-let fileMime = null;
-
-// ── FILE:// DETECTION ──
-if (location.protocol === 'file:') {
-  const w = document.getElementById('corsWarn');
-  if (w) w.style.display = 'flex';
+let gData=null,fileContent=null,fileBase64=null,fileMime=null;
+if(location.protocol==='file:') document.getElementById('corsWarn').style.display='flex';
+function onApiKeyInput(v){const s=document.getElementById('apiStatus');if(v.length>10){s.textContent='設定済';s.className='api-st ok';}else{s.textContent='未設定';s.className='api-st ng';}}
+function toggleApiVis(){const i=document.getElementById('apiKey');i.type=i.type==='password'?'text':'password';}
+function getApiKey(){return document.getElementById('apiKey').value.trim();}
+function setChip(g,el){document.querySelectorAll('#'+g+' .chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');}
+function getChip(g){const a=document.querySelector('#'+g+' .chip.on');return a?a.dataset.v:null;}
+async function handleFile(inp){
+  const f=inp.files[0];if(!f)return;
+  document.getElementById('fn').textContent='📄 '+f.name;
+  const ext=f.name.split('.').pop().toLowerCase();
+  if(ext==='pdf'){const buf=await f.arrayBuffer();const bytes=new Uint8Array(buf);let bin='';for(let i=0;i<bytes.byteLength;i++)bin+=String.fromCharCode(bytes[i]);fileBase64=btoa(bin);fileMime='application/pdf';fileContent=null;}
+  else if(['xlsx','xls'].includes(ext)){const buf=await f.arrayBuffer();const wb=XLSX.read(buf,{type:'array'});let txt='';wb.SheetNames.forEach(n=>{txt+='[Sheet: '+n+']\n'+XLSX.utils.sheet_to_csv(wb.Sheets[n])+'\n\n';});fileContent=txt;fileBase64=null;fileMime=null;}
+  else{fileContent=await f.text();fileBase64=null;fileMime=null;}
 }
-
-// ── API KEY ──
-function onApiKeyInput(val) {
-  const st = document.getElementById('apiStatus');
-  if (val.length > 10) {
-    st.textContent = '設定済';
-    st.className = 'api-status ok';
-  } else {
-    st.textContent = '未設定';
-    st.className = 'api-status ng';
-  }
-}
-function toggleApiVis() {
-  const inp = document.getElementById('apiKey');
-  inp.type = inp.type === 'password' ? 'text' : 'password';
-}
-function getApiKey() {
-  return document.getElementById('apiKey').value.trim();
-}
-
-// ── UI UTILS ──
-function setChip(gid, el) {
-  document.querySelectorAll('#'+gid+' .chip').forEach(c=>c.classList.remove('on'));
-  el.classList.add('on');
-}
-function getChip(gid) {
-  const a = document.querySelector('#'+gid+' .chip.on');
-  return a ? a.dataset.v : null;
-}
-
-// ── FILE HANDLING ──
-async function handleFile(inp) {
-  const f = inp.files[0];
-  if (!f) return;
-  document.getElementById('fn').textContent = f.name;
-  const ext = f.name.split('.').pop().toLowerCase();
-
-  if (ext === 'pdf') {
-    const buf = await f.arrayBuffer();
-    const bytes = new Uint8Array(buf);
-    let bin = '';
-    for (let i=0;i<bytes.byteLength;i++) bin += String.fromCharCode(bytes[i]);
-    fileBase64 = btoa(bin);
-    fileMime = 'application/pdf';
-    fileContent = null;
-  } else if (['xlsx','xls'].includes(ext)) {
-    const buf = await f.arrayBuffer();
-    const wb = XLSX.read(buf,{type:'array'});
-    let txt = '';
-    wb.SheetNames.forEach(n=>{
-      txt += '[Sheet: '+n+']\n'+XLSX.utils.sheet_to_csv(wb.Sheets[n])+'\n\n';
-    });
-    fileContent = txt;
-    fileBase64 = null; fileMime = null;
-  } else {
-    fileContent = await f.text();
-    fileBase64 = null; fileMime = null;
-  }
-}
-
-const fz = document.getElementById('fz');
+const fz=document.getElementById('fz');
 fz.addEventListener('dragover',e=>{e.preventDefault();fz.classList.add('over');});
 fz.addEventListener('dragleave',()=>fz.classList.remove('over'));
-fz.addEventListener('drop',e=>{
-  e.preventDefault();fz.classList.remove('over');
-  const f=e.dataTransfer.files[0];
-  if(f){const dt=new DataTransfer();dt.items.add(f);
-    document.getElementById('fi').files=dt.files;handleFile(document.getElementById('fi'));}
-});
+fz.addEventListener('drop',e=>{e.preventDefault();fz.classList.remove('over');const f=e.dataTransfer.files[0];if(f){const dt=new DataTransfer();dt.items.add(f);document.getElementById('fi').files=dt.files;handleFile(document.getElementById('fi'));}});
 
-// ── GENERATE ──
-async function generate() {
-  const apiKey = getApiKey();
-  if (!apiKey) { alert('Gemini APIキーを入力してください'); return; }
-  const brief = document.getElementById('brief').value.trim();
-  if (!brief && !fileContent && !fileBase64) { alert('概要を入力するか、ファイルをアップロードしてください'); return; }
-
-  const btn = document.getElementById('gbtn');
-  btn.disabled = true;
-  document.getElementById('gbtxt').textContent = '生成中...';
-  document.getElementById('dlbtn').disabled = true;
+async function generate(){
+  const apiKey=getApiKey();if(!apiKey){alert('Gemini APIキーを入力してください');return;}
+  const brief=document.getElementById('brief').value.trim();
+  if(!brief&&!fileContent&&!fileBase64){alert('概要を入力するか、ファイルをアップロードしてください');return;}
+  const btn=document.getElementById('gbtn');btn.disabled=true;
+  document.getElementById('gbtxt').textContent='生成中...';
+  document.getElementById('dlbtn').disabled=true;
   showLoading();
-
-  try {
-    const slides = getChip('sc') || '15';
-    const lang = getChip('lc') === 'en' ? 'English' : '日本語';
-    const client = document.getElementById('client').value.trim();
-    const presenter = document.getElementById('presenter').value.trim();
-    const date = document.getElementById('date').value.trim();
-
-    const sysPrompt = buildSys(lang, slides);
-    const userPrompt = buildUserPrompt(brief, client, presenter, date, slides, lang);
-
-    // Build Gemini contents
-    const parts = [];
-    if (fileBase64 && fileMime) {
-      parts.push({ inlineData: { mimeType: fileMime, data: fileBase64 } });
-    }
-    parts.push({ text: userPrompt });
-
-    const body = {
-      system_instruction: { parts: [{ text: sysPrompt }] },
-      contents: [{ role: 'user', parts }],
-      generationConfig: {
-        maxOutputTokens: 8192,
-        temperature: 0.7,
-        responseMimeType: 'application/json'
-      }
-    };
-
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
-    );
-
-    if (!res.ok) {
-      const e = await res.json();
-      throw new Error(e.error?.message || 'Gemini API error ' + res.status);
-    }
-
-    const d = await res.json();
-    const raw = d.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  try{
+    const slides=getChip('sc')||'15',lang=getChip('lc')==='en'?'English':'日本語';
+    const client=document.getElementById('client').value.trim();
+    const presenter=document.getElementById('presenter').value.trim();
+    const date=document.getElementById('date').value.trim();
+    const parts=[];
+    if(fileBase64&&fileMime) parts.push({inlineData:{mimeType:fileMime,data:fileBase64}});
+    parts.push({text:buildUserPrompt(brief,client,presenter,date,slides,lang)});
+    const body={system_instruction:{parts:[{text:buildSys(lang,slides)}]},contents:[{role:'user',parts}],generationConfig:{maxOutputTokens:8192,temperature:0.7,responseMimeType:'application/json'}};
+    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!res.ok){const e=await res.json();throw new Error(e.error?.message||'Gemini API error '+res.status);}
+    const d=await res.json();
+    const raw=d.candidates?.[0]?.content?.parts?.[0]?.text||'';
     let parsed;
-    try {
-      const clean = raw.replace(/^```json\s*/i,'').replace(/```\s*$/,'').trim();
-      parsed = JSON.parse(clean);
-    } catch {
-      throw new Error('JSON解析エラー。もう一度お試しください。\n\n' + raw.slice(0,200));
-    }
-
-    if (client) parsed.client = client;
-    if (presenter) parsed.presenter = presenter;
-    if (date) parsed.date = date;
-
-    gData = parsed;
-    showPreview(parsed);
-  } catch(err) {
-    showErr(err.message);
-  } finally {
-    btn.disabled = false;
-    document.getElementById('gbtxt').textContent = '🎯 MBBデッキを生成';
-  }
+    try{const clean=raw.replace(/^```json\s*/i,'').replace(/```\s*$/,'').trim();parsed=JSON.parse(clean);}
+    catch{throw new Error('JSON解析エラー。もう一度お試しください。\n\n'+raw.slice(0,200));}
+    if(client)parsed.client=client;if(presenter)parsed.presenter=presenter;if(date)parsed.date=date;
+    gData=parsed;showPreview(parsed);
+  }catch(err){showErr(err.message);}
+  finally{btn.disabled=false;document.getElementById('gbtxt').textContent='🎯　MBBデッキを生成';}
 }
 
-// ── PROMPTS ──
-function buildSys(lang, slideCount) {
+function buildSys(lang,slideCount){
   return `You are a McKinsey senior partner with 20+ years of board-level consulting. You produce presentation content indistinguishable from top-tier MBB deliverables. Apply the Pyramid Principle, MECE logic, and action-oriented communication to every slide.
 
 MANDATORY SLIDE ORDER:
@@ -415,7 +276,7 @@ Every slide except cover, toc, and section dividers MUST have an action title:
 - GOOD: "調達・物流・人件費の3レバー最適化により年間¥2.3Bのコスト削減が18ヶ月以内に実現可能"
 
 CONTENT STANDARDS:
-- Every claim backed by specific data: numbers, %, timeframes (NEVER "significant" / "large" / "many")
+- Every claim backed by specific data: numbers, %, timeframes (NEVER "significant"/"large"/"many")
 - 3–5 bullets per slide maximum — each a complete, MECE idea with evidence
 - Each slide proves exactly ONE point (its action title)
 - Use → for causality; vs. for comparisons
@@ -434,278 +295,65 @@ LAYOUT SELECTION:
 OUTPUT: Target ~${slideCount} slides. Language: ${lang}. Return ONLY valid JSON.
 
 JSON schema:
-{
-  "presentationTitle": "string",
-  "client": "string",
-  "date": "string",
-  "presenter": "string",
-  "slides": [{
-    "id": number,
-    "layout": "cover|exec_summary|toc|section|bullets|two_col|data|recommendation|next_steps",
-    "actionTitle": "string",
-    "subtitle": "string|null",
-    "bullets": ["string"]|null,
-    "leftLabel": "string|null",
-    "leftBullets": ["string"]|null,
-    "rightLabel": "string|null",
-    "rightBullets": ["string"]|null,
-    "tableHeaders": ["string"]|null,
-    "tableRows": [["string"]]|null,
-    "highlights": ["string"]|null,
-    "speakerNotes": "string"
-  }]
-}`;
-}
+{"presentationTitle":"string","client":"string","date":"string","presenter":"string","slides":[{"id":0,"layout":"cover|exec_summary|toc|section|bullets|two_col|data|recommendation|next_steps","actionTitle":"string","subtitle":"string|null","bullets":["string"],"leftLabel":"string|null","leftBullets":["string"],"rightLabel":"string|null","rightBullets":["string"],"tableHeaders":["string"],"tableRows":[["string"]],"highlights":["string"],"speakerNotes":"string"}]}`;}
 
-function buildUserPrompt(brief, client, presenter, date, slides, lang) {
-  return `以下の情報をもとに、MBBパートナーレベルのコンサルティングデッキを生成してください。
+function buildUserPrompt(brief,client,presenter,date,slides,lang){
+  return `以下の情報をもとに、MBBパートナーレベルのコンサルティングデッキを生成してください。\n\n=== プレゼンテーション概要 ===\n${brief}\n\n=== メタ情報 ===\nクライアント: ${client||'（未指定）'}\n発表者: ${presenter||'（未指定）'}\n日付: ${date||'（未指定）'}\n目標スライド数: 約${slides}枚\n言語: ${lang}\n\n${fileContent?'=== 参考資料 ===\n'+fileContent.slice(0,8000)+'\n':''}\nアクションタイトル・Pyramid Principle・MECE構造を厳守し、全ての主張を定量データで裏付けてください。`;}
 
-=== プレゼンテーション概要 ===
-${brief}
+function showLoading(){document.getElementById('pv').innerHTML=`<div class="loading"><div class="spin"></div><div class="load-t">Gemini 2.5 Flash がMBB水準でデッキを構成中...</div><div class="load-s">Pyramid Principle × Action Title を厳守</div><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;}
+function showErr(msg){document.getElementById('pv').innerHTML=`<div style="padding:20px"><div class="err-box">⚠️ ${msg}</div></div>`;}
 
-=== メタ情報 ===
-クライアント: ${client || '（未指定）'}
-発表者: ${presenter || '（未指定）'}
-日付: ${date || '（未指定）'}
-目標スライド数: 約${slides}枚
-言語: ${lang}
+const LABELS={cover:'COVER',exec_summary:'EXEC SUMMARY',toc:'TOC',section:'SECTION',bullets:'BULLETS',two_col:'2-COL',data:'DATA TABLE',recommendation:'RECS',next_steps:'NEXT STEPS'};
 
-${fileContent ? '=== 参考資料 ===\n'+fileContent.slice(0,8000)+'\n' : ''}
-
-アクションタイトル・Pyramid Principle・MECE構造を厳守し、全ての主張を定量データで裏付けてください。`;
-}
-
-// ── UI STATES ──
-function showLoading() {
-  document.getElementById('pv').innerHTML = `<div class="loading">
-    <div class="spin"></div>
-    <div class="load-t">Gemini 2.5 Flash がMBB水準でデッキを構成中...</div>
-    <div class="load-s">Pyramid Principle × Action Title を厳守</div>
-    <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-  </div>`;
-}
-
-function showErr(msg) {
-  document.getElementById('pv').innerHTML = `<div style="padding:20px"><div class="err">⚠️ ${msg}</div></div>`;
-}
-
-const LABELS = {
-  cover:'COVER',exec_summary:'EXEC SUMMARY',toc:'TOC',
-  section:'SECTION',bullets:'BULLETS',two_col:'2-COL',
-  data:'DATA TABLE',recommendation:'RECS',next_steps:'NEXT STEPS'
-};
-
-function showPreview(d) {
-  const slides = d.slides || [];
-  const sections = slides.filter(s=>s.layout==='section').length;
-  const content = slides.filter(s=>!['cover','toc','section'].includes(s.layout)).length;
-
-  const cards = slides.map((sl,i)=>{
-    const lbl = LABELS[sl.layout]||sl.layout.toUpperCase();
-    const buls = sl.bullets||sl.highlights||sl.leftBullets||[];
-    const preview = buls.slice(0,2).map(b=>
-      `<div class="sbp">${b.slice(0,88)}${b.length>88?'…':''}</div>`).join('');
-    return `<div class="sc">
-      <div class="sn">${String(i+1).padStart(2,'0')}</div>
-      <div><div class="sbadge b-${sl.layout}">${lbl}</div></div>
-      <div class="sct">
-        <div class="sat">${sl.actionTitle||''}</div>
-        ${preview}
-      </div>
-    </div>`;
+function showPreview(d){
+  const slides=d.slides||[];
+  const sections=slides.filter(s=>s.layout==='section').length;
+  const content=slides.filter(s=>!['cover','toc','section'].includes(s.layout)).length;
+  const cards=slides.map((sl,i)=>{
+    const lbl=LABELS[sl.layout]||sl.layout.toUpperCase();
+    const buls=sl.bullets||sl.highlights||sl.leftBullets||[];
+    const preview=buls.slice(0,2).map(b=>`<div class="sbp">${b.slice(0,90)}${b.length>90?'…':''}</div>`).join('');
+    return `<div class="sc"><div class="sn">${String(i+1).padStart(2,'0')}</div><div style="padding-top:1px"><div class="sbadge b-${sl.layout}">${lbl}</div></div><div class="sct"><div class="sat">${sl.actionTitle||''}</div>${preview}</div></div>`;
   }).join('');
-
-  document.getElementById('pv').innerHTML = `
-    <div class="sumbar">
-      <div><div class="sv">${slides.length}</div><div class="sl">スライド</div></div>
-      <div><div class="sv">${sections}</div><div class="sl">チャプター</div></div>
-      <div><div class="sv">${content}</div><div class="sl">コンテンツ</div></div>
-    </div>
-    <div class="sg">${cards}</div>`;
-  document.getElementById('dlbtn').disabled = false;
+  document.getElementById('pv').innerHTML=`<div class="sumbar"><div class="sv-item"><div class="sv-num">${slides.length}</div><div class="sv-lbl">スライド</div></div><div class="sv-item"><div class="sv-num">${sections}</div><div class="sv-lbl">チャプター</div></div><div class="sv-item"><div class="sv-num">${content}</div><div class="sv-lbl">コンテンツ</div></div><div class="sv-item" style="flex:3;display:flex;align-items:center;"><span style="font-size:12px;color:var(--muted);padding-left:4px;">${d.presentationTitle||''}</span></div></div><div class="sg">${cards}</div>`;
+  document.getElementById('dlbtn').disabled=false;
 }
 
-// ── PPTX CONSTANTS ──
-const C = {
-  navy:'003087',navyD:'001A4D',navyL:'1A4FCC',
-  red:'CC1100',gold:'C9A84C',
-  bg:'F5F7FA',white:'FFFFFF',dark:'1A1A2E',mid:'4A5568',muted:'718096',
-  border:'D0D8E8',borderL:'E8ECF4',
-  W:10,H:5.625,MX:0.4,TH:0.6,ATH:0.035
-};
+const C={navy:'003087',navyD:'001A4D',navyL:'1A4FCC',red:'CC1100',gold:'C9A84C',bg:'F5F7FA',white:'FFFFFF',dark:'1A1A2E',mid:'4A5568',muted:'718096',border:'D0D8E8',borderL:'E8ECF4',W:10,H:5.625,MX:0.4,TH:0.6,ATH:0.035};
 function ms(){return{type:'outer',blur:7,offset:2,angle:135,color:'000000',opacity:0.09};}
+function addTitleBar(pres,s,title){s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:C.W,h:C.TH,fill:{color:C.navy},line:{color:C.navy}});s.addShape(pres.shapes.RECTANGLE,{x:0,y:C.TH,w:C.W,h:C.ATH,fill:{color:C.gold},line:{color:C.gold}});s.addText(title,{x:C.MX,y:0,w:8.7,h:C.TH,fontSize:14.5,bold:true,color:C.white,fontFace:'Calibri',valign:'middle',margin:0,wrap:true});s.addText('CONFIDENTIAL',{x:7.9,y:0.13,w:1.7,h:0.28,fontSize:6.5,color:'8899BB',align:'right',fontFace:'Calibri',charSpacing:2,margin:0});}
+function addFooter(pres,s,num,total,client){s.addShape(pres.shapes.LINE,{x:C.MX,y:5.43,w:C.W-C.MX*2,h:0,line:{color:C.borderL,width:0.4}});if(client)s.addText(client,{x:C.MX,y:5.45,w:4,h:0.15,fontSize:7,color:C.muted,fontFace:'Calibri',margin:0});s.addText(String(num),{x:8.9,y:5.45,w:0.7,h:0.15,fontSize:7,color:C.muted,align:'right',fontFace:'Calibri',margin:0});}
+function rCover(pres,s,sl,d){s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:C.W,h:3.45,fill:{color:C.navyD},line:{color:C.navyD}});s.addShape(pres.shapes.RECTANGLE,{x:0,y:3.45,w:C.W,h:0.07,fill:{color:C.gold},line:{color:C.gold}});s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:0.1,h:3.45,fill:{color:C.gold},line:{color:C.gold}});s.addShape(pres.shapes.RECTANGLE,{x:0,y:3.52,w:C.W,h:2.105,fill:{color:C.white},line:{color:C.white}});s.addText(sl.actionTitle||d.presentationTitle||'',{x:0.55,y:0.6,w:9.0,h:2.45,fontSize:28,bold:true,color:C.white,fontFace:'Calibri',valign:'middle',wrap:true,margin:0});if(sl.subtitle)s.addText(sl.subtitle,{x:0.55,y:3.0,w:8.5,h:0.35,fontSize:13.5,color:'AABBD4',fontFace:'Calibri',margin:0});s.addText(d.client||'',{x:0.55,y:3.72,w:6,h:0.38,fontSize:15,bold:true,color:C.navy,fontFace:'Calibri',margin:0});const meta=[d.date,d.presenter].filter(Boolean).join('  |  ');if(meta)s.addText(meta,{x:0.55,y:4.17,w:8.5,h:0.28,fontSize:11,color:C.mid,fontFace:'Calibri',margin:0});s.addText('Confidential — For discussion purposes only',{x:0,y:5.42,w:C.W,h:0.19,fontSize:7,color:'AAAAAA',align:'center',fontFace:'Calibri',margin:0});}
+function rExecSummary(pres,s,sl,num,total,client){addTitleBar(pres,s,sl.actionTitle||'エグゼクティブサマリー');const items=sl.highlights||sl.bullets||[];const n=Math.min(items.length,5);if(!n){addFooter(pres,s,num,total,client);return;}const sy=C.TH+C.ATH+0.12,bh=C.H-sy-0.22,bw=(C.W-C.MX*2-(n-1)*0.14)/n;const bgs=['EEF3FB','F5F0E8','EDF5EE','F5EDF5','FFF9EE'];const tops=[C.navy,C.gold,'1A7A4A','6B21A8','B45309'];items.slice(0,n).forEach((item,i)=>{const bx=C.MX+i*(bw+0.14);s.addShape(pres.shapes.RECTANGLE,{x:bx,y:sy,w:bw,h:bh,fill:{color:bgs[i]||'F5F7FA'},line:{color:C.borderL,width:0.5},shadow:ms()});s.addShape(pres.shapes.RECTANGLE,{x:bx,y:sy,w:bw,h:0.055,fill:{color:tops[i]||C.navy},line:{color:tops[i]||C.navy}});s.addText('0'+(i+1),{x:bx,y:sy+0.08,w:bw,h:0.55,fontSize:22,bold:true,color:tops[i]||C.navy,fontFace:'Calibri',align:'center',margin:0});s.addText(item,{x:bx+0.1,y:sy+0.68,w:bw-0.2,h:bh-0.78,fontSize:10,color:C.dark,fontFace:'Calibri',valign:'top',wrap:true,margin:0});});addFooter(pres,s,num,total,client);}
+function rToc(pres,s,sl,allSlides,num,total,client){addTitleBar(pres,s,sl.actionTitle||'アジェンダ');const secs=allSlides.filter(x=>x.layout==='section');const sy=C.TH+C.ATH+0.18,avail=C.H-sy-0.22,ih=avail/Math.max(secs.length,1);secs.forEach((sec,i)=>{const iy=sy+i*ih;s.addShape(pres.shapes.RECTANGLE,{x:C.MX,y:iy+0.05,w:0.4,h:0.4,fill:{color:C.navy},line:{color:C.navy}});s.addText(String(i+1),{x:C.MX,y:iy+0.05,w:0.4,h:0.4,fontSize:13,bold:true,color:C.white,fontFace:'Calibri',align:'center',valign:'middle',margin:0});s.addText(sec.actionTitle||'',{x:C.MX+0.52,y:iy,w:8.7,h:0.5,fontSize:12.5,color:C.dark,fontFace:'Calibri',valign:'middle',margin:0});if(i<secs.length-1)s.addShape(pres.shapes.LINE,{x:C.MX,y:iy+ih-0.06,w:9.2,h:0,line:{color:C.borderL,width:0.4}});});addFooter(pres,s,num,total,client);}
+function rSection(pres,s,sl){s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:C.W,h:C.H,fill:{color:C.navyD},line:{color:C.navyD}});s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:0.1,h:C.H,fill:{color:C.gold},line:{color:C.gold}});s.addShape(pres.shapes.RECTANGLE,{x:0,y:C.H-0.1,w:C.W,h:0.1,fill:{color:C.gold},line:{color:C.gold}});s.addText(sl.actionTitle||'',{x:0.5,y:1.3,w:9.0,h:2.5,fontSize:25,bold:true,color:C.white,fontFace:'Calibri',valign:'middle',wrap:true,margin:0});if(sl.subtitle)s.addText(sl.subtitle,{x:0.5,y:3.95,w:9.0,h:0.48,fontSize:13,color:'AABFD8',fontFace:'Calibri',margin:0});}
+function rBullets(pres,s,sl,num,total,client){addTitleBar(pres,s,sl.actionTitle||'');const buls=sl.bullets||[];const n=Math.min(buls.length,5);if(!n){addFooter(pres,s,num,total,client);return;}const sy=C.TH+C.ATH+0.15,avail=C.H-sy-0.22,ih=avail/n;buls.slice(0,5).forEach((b,i)=>{const iy=sy+i*ih;if(i%2===0)s.addShape(pres.shapes.RECTANGLE,{x:C.MX+0.1,y:iy+0.04,w:9.1,h:ih-0.08,fill:{color:'F8FAFB'},line:{color:C.borderL,width:0.3}});s.addShape(pres.shapes.RECTANGLE,{x:C.MX,y:iy+ih*0.18,w:0.045,h:ih*0.52,fill:{color:C.red},line:{color:C.red}});s.addText(b,{x:C.MX+0.18,y:iy,w:9.0,h:ih,fontSize:12,color:C.dark,fontFace:'Calibri',valign:'middle',wrap:true,margin:0});});addFooter(pres,s,num,total,client);}
+function rTwoCol(pres,s,sl,num,total,client){addTitleBar(pres,s,sl.actionTitle||'');const sy=C.TH+C.ATH+0.13,ch=C.H-sy-0.22,cw=4.35,gap=0.3,lx=C.MX,rx=C.MX+cw+gap,lh=0.42;s.addShape(pres.shapes.RECTANGLE,{x:lx,y:sy,w:cw,h:ch,fill:{color:'F5F7FA'},line:{color:C.borderL,width:0.5}});s.addShape(pres.shapes.RECTANGLE,{x:lx,y:sy,w:cw,h:0.048,fill:{color:C.navy},line:{color:C.navy}});s.addText(sl.leftLabel||'AS-IS',{x:lx,y:sy+0.048,w:cw,h:lh,fontSize:11,bold:true,color:C.navy,fontFace:'Calibri',align:'center',valign:'middle',margin:0});(sl.leftBullets||[]).forEach((b,i)=>s.addText([{text:b,options:{bullet:true,breakLine:i<(sl.leftBullets.length-1)}}],{x:lx+0.14,y:sy+lh+0.1+i*0.62,w:cw-0.28,h:0.58,fontSize:11,color:C.dark,fontFace:'Calibri',wrap:true}));s.addShape(pres.shapes.RECTANGLE,{x:rx,y:sy,w:cw,h:ch,fill:{color:'EEF4FF'},line:{color:C.borderL,width:0.5}});s.addShape(pres.shapes.RECTANGLE,{x:rx,y:sy,w:cw,h:0.048,fill:{color:C.gold},line:{color:C.gold}});s.addText(sl.rightLabel||'TO-BE',{x:rx,y:sy+0.048,w:cw,h:lh,fontSize:11,bold:true,color:'8B6820',fontFace:'Calibri',align:'center',valign:'middle',margin:0});(sl.rightBullets||[]).forEach((b,i)=>s.addText([{text:b,options:{bullet:true,breakLine:i<(sl.rightBullets.length-1)}}],{x:rx+0.14,y:sy+lh+0.1+i*0.62,w:cw-0.28,h:0.58,fontSize:11,color:C.dark,fontFace:'Calibri',wrap:true}));addFooter(pres,s,num,total,client);}
+function rData(pres,s,sl,num,total,client){addTitleBar(pres,s,sl.actionTitle||'');if(!sl.tableHeaders){addFooter(pres,s,num,total,client);return;}const sy=C.TH+C.ATH+0.15;const header=sl.tableHeaders.map(h=>({text:h,options:{bold:true,color:C.white,fill:{color:C.navy},fontSize:10.5,fontFace:'Calibri',align:'center',valign:'middle'}}));const rows=(sl.tableRows||[]).map((row,ri)=>row.map((cell,ci)=>({text:String(cell),options:{fontSize:10.5,color:C.dark,fontFace:'Calibri',fill:{color:ri%2===0?C.white:'F5F7FA'},align:ci===0?'left':'center'}})));s.addTable([header,...rows],{x:C.MX,y:sy,w:C.W-C.MX*2,rowH:0.42,border:{pt:0.5,color:C.border},fontFace:'Calibri'});addFooter(pres,s,num,total,client);}
+function rRec(pres,s,sl,num,total,client){addTitleBar(pres,s,sl.actionTitle||'');const recs=sl.bullets||sl.highlights||[];const priorities=['P1 最優先','P2 重要','P3 推奨'];const pClrs=[C.red,'C97B00','1A7A4A'];const bgClrs=['FFF5F5','FFFBF0','F0FFF8'];const sy=C.TH+C.ATH+0.13,n=Math.min(recs.length,3),ih=(C.H-sy-0.22)/Math.max(n,1)-0.1;recs.slice(0,3).forEach((rec,i)=>{const iy=sy+i*(ih+0.1),bw=1.1;s.addShape(pres.shapes.RECTANGLE,{x:C.MX,y:iy,w:C.W-C.MX*2,h:ih,fill:{color:bgClrs[i]},line:{color:C.border,width:0.5},shadow:ms()});s.addShape(pres.shapes.RECTANGLE,{x:C.MX,y:iy,w:bw,h:ih,fill:{color:pClrs[i]},line:{color:pClrs[i]}});s.addText(priorities[i]||'P'+(i+1),{x:C.MX,y:iy,w:bw,h:ih,fontSize:10,bold:true,color:C.white,fontFace:'Calibri',align:'center',valign:'middle',margin:0});s.addText(rec,{x:C.MX+bw+0.14,y:iy,w:C.W-C.MX*2-bw-0.24,h:ih,fontSize:11.5,color:C.dark,fontFace:'Calibri',valign:'middle',wrap:true,margin:0});});addFooter(pres,s,num,total,client);}
+function rNextSteps(pres,s,sl,num,total,client){addTitleBar(pres,s,sl.actionTitle||'ネクストアクション');const acts=sl.bullets||[];const sy=C.TH+C.ATH+0.15,n=Math.min(acts.length,6);if(!n){addFooter(pres,s,num,total,client);return;}const ih=(C.H-sy-0.22)/n,dr=0.21;acts.slice(0,6).forEach((a,i)=>{const iy=sy+i*ih,cy=iy+(ih-dr*2)/2;s.addShape(pres.shapes.OVAL,{x:C.MX,y:cy,w:dr*2,h:dr*2,fill:{color:C.navy},line:{color:C.navy}});s.addText(String(i+1),{x:C.MX,y:cy,w:dr*2,h:dr*2,fontSize:10,bold:true,color:C.white,fontFace:'Calibri',align:'center',valign:'middle',margin:0});if(i<n-1)s.addShape(pres.shapes.LINE,{x:C.MX+dr,y:cy+dr*2,w:0,h:ih-dr*2,line:{color:C.borderL,width:1}});s.addText(a,{x:C.MX+dr*2+0.14,y:iy,w:C.W-C.MX-dr*2-0.24,h:ih,fontSize:11.5,color:C.dark,fontFace:'Calibri',valign:'middle',wrap:true,margin:0});if(i<n-1)s.addShape(pres.shapes.LINE,{x:C.MX+dr*2+0.14,y:iy+ih,w:C.W-C.MX-dr*2-0.24,h:0,line:{color:C.borderL,width:0.3}});});addFooter(pres,s,num,total,client);}
 
-function addTitleBar(pres,s,title){
-  s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:C.W,h:C.TH,fill:{color:C.navy},line:{color:C.navy}});
-  s.addShape(pres.shapes.RECTANGLE,{x:0,y:C.TH,w:C.W,h:C.ATH,fill:{color:C.gold},line:{color:C.gold}});
-  s.addText(title,{x:C.MX,y:0,w:8.7,h:C.TH,fontSize:14.5,bold:true,color:C.white,fontFace:'Calibri',valign:'middle',margin:0,wrap:true});
-  s.addText('CONFIDENTIAL',{x:7.9,y:0.13,w:1.7,h:0.28,fontSize:6.5,color:'8899BB',align:'right',fontFace:'Calibri',charSpacing:2,margin:0});
-}
-
-function addFooter(pres,s,num,total,client){
-  s.addShape(pres.shapes.LINE,{x:C.MX,y:5.43,w:C.W-C.MX*2,h:0,line:{color:C.borderL,width:0.4}});
-  if(client) s.addText(client,{x:C.MX,y:5.45,w:4,h:0.15,fontSize:7,color:C.muted,fontFace:'Calibri',margin:0});
-  s.addText(String(num),{x:8.9,y:5.45,w:0.7,h:0.15,fontSize:7,color:C.muted,align:'right',fontFace:'Calibri',margin:0});
-}
-
-function rCover(pres,s,sl,d){
-  s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:C.W,h:3.45,fill:{color:C.navyD},line:{color:C.navyD}});
-  s.addShape(pres.shapes.RECTANGLE,{x:0,y:3.45,w:C.W,h:0.07,fill:{color:C.gold},line:{color:C.gold}});
-  s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:0.1,h:3.45,fill:{color:C.gold},line:{color:C.gold}});
-  s.addShape(pres.shapes.RECTANGLE,{x:0,y:3.52,w:C.W,h:2.105,fill:{color:C.white},line:{color:C.white}});
-  s.addText(sl.actionTitle||d.presentationTitle||'',{x:0.55,y:0.6,w:9.0,h:2.45,fontSize:28,bold:true,color:C.white,fontFace:'Calibri',valign:'middle',wrap:true,margin:0});
-  if(sl.subtitle) s.addText(sl.subtitle,{x:0.55,y:3.0,w:8.5,h:0.35,fontSize:13.5,color:'AABBD4',fontFace:'Calibri',margin:0});
-  s.addText(d.client||'',{x:0.55,y:3.72,w:6,h:0.38,fontSize:15,bold:true,color:C.navy,fontFace:'Calibri',margin:0});
-  const meta=[d.date,d.presenter].filter(Boolean).join('  |  ');
-  if(meta) s.addText(meta,{x:0.55,y:4.17,w:8.5,h:0.28,fontSize:11,color:C.mid,fontFace:'Calibri',margin:0});
-  s.addText('Confidential — For discussion purposes only',{x:0,y:5.42,w:C.W,h:0.19,fontSize:7,color:'AAAAAA',align:'center',fontFace:'Calibri',margin:0});
-}
-
-function rExecSummary(pres,s,sl,num,total,client){
-  addTitleBar(pres,s,sl.actionTitle||'エグゼクティブサマリー');
-  const items=sl.highlights||sl.bullets||[];
-  const n=Math.min(items.length,5);
-  if(!n){addFooter(pres,s,num,total,client);return;}
-  const sy=C.TH+C.ATH+0.12,bh=C.H-sy-0.22,bw=(C.W-C.MX*2-(n-1)*0.14)/n;
-  const bgs=['EEF3FB','F5F0E8','EDF5EE','F5EDF5','FFF9EE'];
-  const tops=[C.navy,C.gold,'1A7A4A','6B21A8','B45309'];
-  items.slice(0,n).forEach((item,i)=>{
-    const bx=C.MX+i*(bw+0.14);
-    s.addShape(pres.shapes.RECTANGLE,{x:bx,y:sy,w:bw,h:bh,fill:{color:bgs[i]||'F5F7FA'},line:{color:C.borderL,width:0.5},shadow:ms()});
-    s.addShape(pres.shapes.RECTANGLE,{x:bx,y:sy,w:bw,h:0.055,fill:{color:tops[i]||C.navy},line:{color:tops[i]||C.navy}});
-    s.addText('0'+(i+1),{x:bx,y:sy+0.08,w:bw,h:0.55,fontSize:22,bold:true,color:tops[i]||C.navy,fontFace:'Calibri',align:'center',margin:0});
-    s.addText(item,{x:bx+0.1,y:sy+0.68,w:bw-0.2,h:bh-0.78,fontSize:10,color:C.dark,fontFace:'Calibri',valign:'top',wrap:true,margin:0});
-  });
-  addFooter(pres,s,num,total,client);
-}
-
-function rToc(pres,s,sl,allSlides,num,total,client){
-  addTitleBar(pres,s,sl.actionTitle||'アジェンダ');
-  const secs=allSlides.filter(x=>x.layout==='section');
-  const sy=C.TH+C.ATH+0.18,avail=C.H-sy-0.22,ih=avail/Math.max(secs.length,1);
-  secs.forEach((sec,i)=>{
-    const iy=sy+i*ih;
-    s.addShape(pres.shapes.RECTANGLE,{x:C.MX,y:iy+0.05,w:0.4,h:0.4,fill:{color:C.navy},line:{color:C.navy}});
-    s.addText(String(i+1),{x:C.MX,y:iy+0.05,w:0.4,h:0.4,fontSize:13,bold:true,color:C.white,fontFace:'Calibri',align:'center',valign:'middle',margin:0});
-    s.addText(sec.actionTitle||'',{x:C.MX+0.52,y:iy,w:8.7,h:0.5,fontSize:12.5,color:C.dark,fontFace:'Calibri',valign:'middle',margin:0});
-    if(i<secs.length-1) s.addShape(pres.shapes.LINE,{x:C.MX,y:iy+ih-0.06,w:9.2,h:0,line:{color:C.borderL,width:0.4}});
-  });
-  addFooter(pres,s,num,total,client);
-}
-
-function rSection(pres,s,sl){
-  s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:C.W,h:C.H,fill:{color:C.navyD},line:{color:C.navyD}});
-  s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:0.1,h:C.H,fill:{color:C.gold},line:{color:C.gold}});
-  s.addShape(pres.shapes.RECTANGLE,{x:0,y:C.H-0.1,w:C.W,h:0.1,fill:{color:C.gold},line:{color:C.gold}});
-  s.addText(sl.actionTitle||'',{x:0.5,y:1.3,w:9.0,h:2.5,fontSize:25,bold:true,color:C.white,fontFace:'Calibri',valign:'middle',wrap:true,margin:0});
-  if(sl.subtitle) s.addText(sl.subtitle,{x:0.5,y:3.95,w:9.0,h:0.48,fontSize:13,color:'AABFD8',fontFace:'Calibri',margin:0});
-}
-
-function rBullets(pres,s,sl,num,total,client){
-  addTitleBar(pres,s,sl.actionTitle||'');
-  const buls=sl.bullets||[];
-  const n=Math.min(buls.length,5);
-  if(!n){addFooter(pres,s,num,total,client);return;}
-  const sy=C.TH+C.ATH+0.15,avail=C.H-sy-0.22,ih=avail/n;
-  buls.slice(0,5).forEach((b,i)=>{
-    const iy=sy+i*ih;
-    if(i%2===0) s.addShape(pres.shapes.RECTANGLE,{x:C.MX+0.1,y:iy+0.04,w:9.1,h:ih-0.08,fill:{color:'F8FAFB'},line:{color:C.borderL,width:0.3}});
-    s.addShape(pres.shapes.RECTANGLE,{x:C.MX,y:iy+ih*0.18,w:0.045,h:ih*0.52,fill:{color:C.red},line:{color:C.red}});
-    s.addText(b,{x:C.MX+0.18,y:iy,w:9.0,h:ih,fontSize:12,color:C.dark,fontFace:'Calibri',valign:'middle',wrap:true,margin:0});
-  });
-  addFooter(pres,s,num,total,client);
-}
-
-function rTwoCol(pres,s,sl,num,total,client){
-  addTitleBar(pres,s,sl.actionTitle||'');
-  const sy=C.TH+C.ATH+0.13,ch=C.H-sy-0.22,cw=4.35,gap=0.3;
-  const lx=C.MX,rx=C.MX+cw+gap,lh=0.42;
-  s.addShape(pres.shapes.RECTANGLE,{x:lx,y:sy,w:cw,h:ch,fill:{color:'F5F7FA'},line:{color:C.borderL,width:0.5}});
-  s.addShape(pres.shapes.RECTANGLE,{x:lx,y:sy,w:cw,h:0.048,fill:{color:C.navy},line:{color:C.navy}});
-  s.addText(sl.leftLabel||'AS-IS',{x:lx,y:sy+0.048,w:cw,h:lh,fontSize:11,bold:true,color:C.navy,fontFace:'Calibri',align:'center',valign:'middle',margin:0});
-  (sl.leftBullets||[]).forEach((b,i)=>s.addText([{text:b,options:{bullet:true,breakLine:i<(sl.leftBullets.length-1)}}],{x:lx+0.14,y:sy+lh+0.1+i*0.62,w:cw-0.28,h:0.58,fontSize:11,color:C.dark,fontFace:'Calibri',wrap:true}));
-  s.addShape(pres.shapes.RECTANGLE,{x:rx,y:sy,w:cw,h:ch,fill:{color:'EEF4FF'},line:{color:C.borderL,width:0.5}});
-  s.addShape(pres.shapes.RECTANGLE,{x:rx,y:sy,w:cw,h:0.048,fill:{color:C.gold},line:{color:C.gold}});
-  s.addText(sl.rightLabel||'TO-BE',{x:rx,y:sy+0.048,w:cw,h:lh,fontSize:11,bold:true,color:'8B6820',fontFace:'Calibri',align:'center',valign:'middle',margin:0});
-  (sl.rightBullets||[]).forEach((b,i)=>s.addText([{text:b,options:{bullet:true,breakLine:i<(sl.rightBullets.length-1)}}],{x:rx+0.14,y:sy+lh+0.1+i*0.62,w:cw-0.28,h:0.58,fontSize:11,color:C.dark,fontFace:'Calibri',wrap:true}));
-  addFooter(pres,s,num,total,client);
-}
-
-function rData(pres,s,sl,num,total,client){
-  addTitleBar(pres,s,sl.actionTitle||'');
-  if(!sl.tableHeaders){addFooter(pres,s,num,total,client);return;}
-  const sy=C.TH+C.ATH+0.15;
-  const header=sl.tableHeaders.map(h=>({text:h,options:{bold:true,color:C.white,fill:{color:C.navy},fontSize:10.5,fontFace:'Calibri',align:'center',valign:'middle'}}));
-  const rows=(sl.tableRows||[]).map((row,ri)=>row.map((cell,ci)=>({text:String(cell),options:{fontSize:10.5,color:C.dark,fontFace:'Calibri',fill:{color:ri%2===0?C.white:'F5F7FA'},align:ci===0?'left':'center'}})));
-  s.addTable([header,...rows],{x:C.MX,y:sy,w:C.W-C.MX*2,rowH:0.42,border:{pt:0.5,color:C.border},fontFace:'Calibri'});
-  addFooter(pres,s,num,total,client);
-}
-
-function rRec(pres,s,sl,num,total,client){
-  addTitleBar(pres,s,sl.actionTitle||'');
-  const recs=sl.bullets||sl.highlights||[];
-  const priorities=['P1 最優先','P2 重要','P3 推奨'];
-  const pClrs=[C.red,'C97B00','1A7A4A'];
-  const bgClrs=['FFF5F5','FFFBF0','F0FFF8'];
-  const sy=C.TH+C.ATH+0.13,n=Math.min(recs.length,3),ih=(C.H-sy-0.22)/Math.max(n,1)-0.1;
-  recs.slice(0,3).forEach((rec,i)=>{
-    const iy=sy+i*(ih+0.1),bw=1.1;
-    s.addShape(pres.shapes.RECTANGLE,{x:C.MX,y:iy,w:C.W-C.MX*2,h:ih,fill:{color:bgClrs[i]},line:{color:C.border,width:0.5},shadow:ms()});
-    s.addShape(pres.shapes.RECTANGLE,{x:C.MX,y:iy,w:bw,h:ih,fill:{color:pClrs[i]},line:{color:pClrs[i]}});
-    s.addText(priorities[i]||'P'+(i+1),{x:C.MX,y:iy,w:bw,h:ih,fontSize:10,bold:true,color:C.white,fontFace:'Calibri',align:'center',valign:'middle',margin:0});
-    s.addText(rec,{x:C.MX+bw+0.14,y:iy,w:C.W-C.MX*2-bw-0.24,h:ih,fontSize:11.5,color:C.dark,fontFace:'Calibri',valign:'middle',wrap:true,margin:0});
-  });
-  addFooter(pres,s,num,total,client);
-}
-
-function rNextSteps(pres,s,sl,num,total,client){
-  addTitleBar(pres,s,sl.actionTitle||'ネクストアクション');
-  const acts=sl.bullets||[];
-  const sy=C.TH+C.ATH+0.15,n=Math.min(acts.length,6);
-  if(!n){addFooter(pres,s,num,total,client);return;}
-  const ih=(C.H-sy-0.22)/n,dr=0.21;
-  acts.slice(0,6).forEach((a,i)=>{
-    const iy=sy+i*ih,cy=iy+(ih-dr*2)/2;
-    s.addShape(pres.shapes.OVAL,{x:C.MX,y:cy,w:dr*2,h:dr*2,fill:{color:C.navy},line:{color:C.navy}});
-    s.addText(String(i+1),{x:C.MX,y:cy,w:dr*2,h:dr*2,fontSize:10,bold:true,color:C.white,fontFace:'Calibri',align:'center',valign:'middle',margin:0});
-    if(i<n-1) s.addShape(pres.shapes.LINE,{x:C.MX+dr,y:cy+dr*2,w:0,h:ih-dr*2,line:{color:C.borderL,width:1}});
-    s.addText(a,{x:C.MX+dr*2+0.14,y:iy,w:C.W-C.MX-dr*2-0.24,h:ih,fontSize:11.5,color:C.dark,fontFace:'Calibri',valign:'middle',wrap:true,margin:0});
-    if(i<n-1) s.addShape(pres.shapes.LINE,{x:C.MX+dr*2+0.14,y:iy+ih,w:C.W-C.MX-dr*2-0.24,h:0,line:{color:C.borderL,width:0.3}});
-  });
-  addFooter(pres,s,num,total,client);
-}
-
-// ── DOWNLOAD ──
-function downloadPptx() {
-  if (!gData) return;
-  const pres = new PptxGenJS();
-  pres.layout = 'LAYOUT_16x9';
-  pres.author = gData.presenter || 'Consultant';
-  pres.title = gData.presentationTitle || 'Presentation';
-
-  const slides = gData.slides || [];
-  const total = slides.length;
-  const client = gData.client || '';
-
-  slides.forEach((sl,i) => {
-    const s = pres.addSlide();
-    const n = i+1;
-    switch(sl.layout) {
-      case 'cover':          rCover(pres,s,sl,gData); break;
-      case 'exec_summary':   rExecSummary(pres,s,sl,n,total,client); break;
-      case 'toc':            rToc(pres,s,sl,slides,n,total,client); break;
-      case 'section':        rSection(pres,s,sl); break;
-      case 'two_col':        rTwoCol(pres,s,sl,n,total,client); break;
-      case 'data':           rData(pres,s,sl,n,total,client); break;
-      case 'recommendation': rRec(pres,s,sl,n,total,client); break;
-      case 'next_steps':     rNextSteps(pres,s,sl,n,total,client); break;
-      default:               rBullets(pres,s,sl,n,total,client); break;
+function downloadPptx(){
+  if(!gData)return;
+  const pres=new PptxGenJS();pres.layout='LAYOUT_16x9';pres.author=gData.presenter||'Consultant';pres.title=gData.presentationTitle||'Presentation';
+  const slides=gData.slides||[],total=slides.length,client=gData.client||'';
+  slides.forEach((sl,i)=>{
+    const s=pres.addSlide(),n=i+1;
+    switch(sl.layout){
+      case 'cover':rCover(pres,s,sl,gData);break;
+      case 'exec_summary':rExecSummary(pres,s,sl,n,total,client);break;
+      case 'toc':rToc(pres,s,sl,slides,n,total,client);break;
+      case 'section':rSection(pres,s,sl);break;
+      case 'two_col':rTwoCol(pres,s,sl,n,total,client);break;
+      case 'data':rData(pres,s,sl,n,total,client);break;
+      case 'recommendation':rRec(pres,s,sl,n,total,client);break;
+      case 'next_steps':rNextSteps(pres,s,sl,n,total,client);break;
+      default:rBullets(pres,s,sl,n,total,client);
     }
-    if (sl.speakerNotes) s.addNotes(sl.speakerNotes);
+    if(sl.speakerNotes)s.addNotes(sl.speakerNotes);
   });
-
-  const fname = (gData.presentationTitle||'deck').replace(/[\\/:*?"<>|]/g,'_').slice(0,40)+'.pptx';
-  pres.writeFile({ fileName: fname });
+  const fname=(gData.presentationTitle||'deck').replace(/[\\/:*?"<>|]/g,'_').slice(0,40)+'.pptx';
+  pres.writeFile({fileName:fname});
 }
 </script>
 </body>
